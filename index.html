@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Vega-Lite Visualization</title>
+    <meta charset="utf-8" />
+
+    <!-- Include Vega, Vega-Lite, and Vega-Embed libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.29.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.19.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.25.0"></script>
+
+    <style>
+      /* Add space between Vega-Embed links */
+      .vega-actions a {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Vega-Lite Visualization</h1>
+    <!-- Container for the visualization -->
+    <div id="vis"></div>
+
+    <script>
+      // Vega-Lite specification
+      var vlSpec = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+        data: {
+          url: 'https://raw.githubusercontent.com/vega/vega/master/docs/data/seattle-weather.csv'
+        },
+        layer: [
+          {
+            params: [
+              {
+                name: 'brush',
+                select: {type: 'interval', encodings: ['x']}
+              }
+            ],
+            mark: 'bar',
+            encoding: {
+              x: {
+                timeUnit: 'month',
+                field: 'date',
+                type: 'ordinal'
+              },
+              y: {
+                aggregate: 'mean',
+                field: 'precipitation',
+                type: 'quantitative'
+              },
+              opacity: {
+                condition: {
+                  param: 'brush', value: 1
+                },
+                value: 0.7
+              }
+            }
+          },
+          {
+            transform: [
+              {
+                filter: {param: 'brush'}
+              }
+            ],
+            mark: 'rule',
+            encoding: {
+              y: {
+                aggregate: 'mean',
+                field: 'precipitation',
+                type: 'quantitative'
+              },
+              color: {value: 'firebrick'},
+              size: {value: 3}
+            }
+          }
+        ]
+      };
+
+      // Embed the visualization in the container with id 'vis'
+      vegaEmbed('#vis', vlSpec)
+        .then(result => {
+          console.log('Visualization successfully rendered');
+        })
+        .catch(error => {
+          console.error('Error rendering visualization:', error);
+        });
+    </script>
+  </body>
+</html>
